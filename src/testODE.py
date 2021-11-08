@@ -37,6 +37,8 @@ parser.add_argument('-e','--num_epoch', type=int, default=250,
                     help='Количество эпох')
 opt = parser.parse_args()
 
+Path(f'logs/').mkdir(exist_ok=True)
+
 LOGGING_CONFIG['handlers']['file_handler']['filename'] = f'logs/{opt.exp_name}.log'
 logging.config.dictConfig(LOGGING_CONFIG)
 logger = logging.getLogger(__name__)

@@ -2,7 +2,7 @@
 name = "NeuralODE"
 version = "0.0.1"
 description = "Прогнозирование ЗПВ методами нейронных дифференциальных уравнений"
-authors = ["Голов В.А. ИММО-02-20"]
+authors = ["Голов В.А."]
 
 [tool.poetry.dependencies]
 python = "^3.8.5"
