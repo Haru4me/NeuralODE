@@ -105,6 +105,4 @@ data/syn
 *.lock
 
 # Assets stuff:
-assets/adams/
-assets/rk4/
-assets/euler/
+assets/
