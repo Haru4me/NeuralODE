@@ -13,5 +13,5 @@ dy/dt = f(t, y, v)    y(t_0, v_0) = y_0
 
 Пример работы скрипта:
 <p align="center">
-<img align="middle" src="./assets/dopri5/dopri5.gif" alt="ODE Demo" width="400" height="200" />
+<img align="middle" src="./assets/dopri5/dopri5.gif" alt="ODE Demo" width="500" height="250" />
 </p>
