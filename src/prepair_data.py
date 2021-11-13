@@ -52,7 +52,7 @@ if __name__ == '__main__':
     
     try:
         logger.info(f'START prepare data with '+', '.join('{}: {}'.format(key, val) for key, val in opt._get_kwargs()))
-        """
+        
         pathes = list(Path('data/syn').glob('*.csv'))
         
         pbar = tqdm(total=len(pathes)-1, desc='Download syn data')
@@ -65,41 +65,34 @@ if __name__ == '__main__':
                                 'datetime'], date_parser=date_parser)), axis=0)
                 pbar.update(1)
         
+        syn.loc[syn.R12 != 0, 'R12'] /= 4
+        syn.loc[:,'R12'] = syn.R12.interpolate(limit_direction='backward', limitint=3, method='nearest')
+        
         if opt.fillna:
             logger.info('fillna')
             syn.loc[:, 'R12'] = syn.R12.fillna(0)
         
-        
-
         pairs = pd.read_csv('data/pairs/pairs.csv')
         pairs = pairs[pairs.dist < opt.dist]
 
         syn.loc[:, 'ind'] = syn.s_ind.map(
             {key: val for key, val in pairs[['s_ind', 'ind']].values})
         syn = syn.drop('s_ind', axis=1)
-        """
-        #####################################################!
-        syn = pd.read_parquet('data/syn.parquet')            # !
-        pairs = pd.read_csv('data/pairs/pairs.csv')          # !
-        pairs = pairs[pairs.dist < opt.dist]                 # !
-        #####################################################!
+        
         syn.loc[:, 'phi'] = (syn.datetime - syn.datetime.min()).dt.total_seconds()
         syn.loc[:, 'phi'] = 10*np.sin(syn.phi.values/365/24/3600*2*np.pi+0.5)+10
 
         logger.info('Prepare agro data')
         agro = pd.read_csv('data/agro/agro.csv')
         agro.loc[:, 'datetime'] = pd.to_datetime(agro.year.astype(
-            str) + '-' + agro.month.astype(str) + '-' + agro.day.astype(str))
+            str) + '-' + agro.month.astype(str) + '-' + agro.day.astype(str) + ' 09:00:00')
 
         dt_min, dt_max = np.max((syn.datetime.min(), agro.datetime.min())), np.min((syn.datetime.max(), agro.datetime.max()))
         syn = syn[(syn.datetime >= dt_min) & (syn.datetime <= dt_max)]
         agro = agro[(agro.datetime >= dt_min) & (agro.datetime <= dt_max)]
         
-        data = syn[SYN_COLS].merge(agro[AGRO_COLS], how='left', on=['ind', 'datetime'])
-        
-        #syn[SYN_COLS].to_parquet('data/syn.parquet', index=False)
-        #agro[AGRO_COLS].to_parquet('data/agro.parquet', index=False)
-        #logger.info('Save syn and agro data')
+        #data = syn[SYN_COLS].merge(agro[AGRO_COLS], how='left', on=['ind', 'datetime'])
+        agro[AGRO_COLS].to_parquet('data/agro.parquet', index=False)
 
         if opt.climate:
 
@@ -121,11 +114,11 @@ if __name__ == '__main__':
                     df.loc[:, CLIMATE_OPT[path]] = nc[CLIMATE_OPT[path]][i].data[latmask, lonmask]
                 climate = pd.concat((climate,df),axis=0, ignore_index=True)
 
-            #?data.loc[:, 'month'] = data.datetime.dt.month
-            #?data = df.merge(climate, on=['ind', 'month']).drop('month', axis=1)
+            syn.loc[:, 'month'] = syn.datetime.dt.month
+            syn = syn[SYN_COLS+['month']].merge(climate, on=['ind', 'month']).drop('month', axis=1)
 
-        data.to_parquet('data/data.parquet',index=False)
-        logger.info('Save all data')
+        syn.to_parquet('data/syn.parquet', index=False)
+        logger.info('Save syn data')
 
     except Exception as exp:
         err = format_exc()
@@ -133,10 +126,3 @@ if __name__ == '__main__':
         raise(exp)
     
     logger.info('END prepare data')
-
-
-#TODO: Интерполировать ЗПВ
-#? Как корректировать R12?
-
-    
-
