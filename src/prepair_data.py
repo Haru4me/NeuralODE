@@ -92,7 +92,7 @@ if __name__ == '__main__':
         agro = agro[(agro.datetime >= dt_min) & (agro.datetime <= dt_max)]
         
         #data = syn[SYN_COLS].merge(agro[AGRO_COLS], how='left', on=['ind', 'datetime'])
-        agro[AGRO_COLS].to_parquet('data/agro.parquet', index=False)
+        agro[AGRO_COLS].sort_values(['ind','datetime']).to_parquet('data/agro.parquet', index=False)
 
         if opt.climate:
 
@@ -116,6 +116,7 @@ if __name__ == '__main__':
 
             syn.loc[:, 'month'] = syn.datetime.dt.month
             syn = syn[SYN_COLS+['month']].merge(climate, on=['ind', 'month']).drop('month', axis=1)
+            syn = syn.sort_values(['ind', 'datetime'])
 
         syn.to_parquet('data/syn.parquet', index=False)
         logger.info('Save syn data')
