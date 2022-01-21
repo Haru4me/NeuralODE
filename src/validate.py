@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from pandas.core.reshape.concat import concat
 
 from tqdm import tqdm
 from scipy.interpolate import interp1d
@@ -38,11 +39,12 @@ if __name__ == '__main__':
                         x = np.linspace(0, n-1, 81)
                         new_data.loc[:, col] = f(x)
                     elif abs(len(data) - 81) > 9:
-                        f = interp1d(np.arange(n), data.loc[:, col].to_numpy())
-                        x = np.linspace(0, n-1, 81)
+                        continue
                 new_syn = pd.concat((new_syn, new_data), axis=0)
             pbar.update(1)
             if i > 11 or i < 10:
                 continue
 
-    new_syn.astype({'ind': int}).to_parquet('data/new_syn.parquet')
+    new_syn.astype({'ind': int}).drop_duplicates().to_parquet('data/new_syn.parquet')
+
+#! ДОБАВИТЬ ОБРАБОТКУ AGRO (ТЕ ОТРЕЗКИ, ЧТО НЕ ИДУТ В NEW_SYN, УДАЛЯЮТСЯ ИЗ AGRO)
