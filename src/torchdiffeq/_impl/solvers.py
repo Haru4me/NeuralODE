@@ -103,7 +103,7 @@ class FixedGridODESolver(metaclass=abc.ABCMeta):
         y0 = self.y0
         for t0, t1 in zip(time_grid[:-1], time_grid[1:]):
             dt = t1 - t0
-            v0, v1 = self.v[[j-1, j]]
+            v0, v1 = self.v[:,j-1], self.v[:,j]
             dy, f0 = self._step_func(self.func, t0, dt, t1, y0, v0)
             y1 = y0 + dy
 

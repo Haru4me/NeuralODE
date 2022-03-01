@@ -1,3 +1,4 @@
+from turtle import shape
 import warnings
 import torch
 import torch.nn as nn
@@ -9,7 +10,7 @@ from .misc import _mixed_norm
 class OdeintAdjointMethod(torch.autograd.Function):
 
     @staticmethod
-    def forward(ctx, shapes, func, y0, t, rtol, atol, method, options, event_fn, adjoint_rtol, adjoint_atol, adjoint_method,
+    def forward(ctx, shapes, func, y0, v0, t, rtol, atol, method, options, event_fn, adjoint_rtol, adjoint_atol, adjoint_method,
                 adjoint_options, t_requires_grad, *adjoint_params):
 
         ctx.shapes = shapes
@@ -22,7 +23,7 @@ class OdeintAdjointMethod(torch.autograd.Function):
         ctx.event_mode = event_fn is not None
 
         with torch.no_grad():
-            ans = odeint(func, y0, t, rtol=rtol, atol=atol, method=method, options=options, event_fn=event_fn)
+            ans = odeint(func, y0, v0, t, rtol=rtol, atol=atol, method=method, options=options, event_fn=event_fn)
 
             if event_fn is None:
                 y = ans
@@ -125,6 +126,7 @@ class OdeintAdjointMethod(torch.autograd.Function):
                 # Run the augmented system backwards in time.
                 aug_state = odeint(
                     augmented_dynamics, tuple(aug_state),
+                    torch.zeros((455,t[i - 1:i + 1].shape[0])), #!v_aug
                     t[i - 1:i + 1].flip(0),
                     rtol=adjoint_rtol, atol=adjoint_atol, method=adjoint_method, options=adjoint_options
                 )
@@ -145,7 +147,7 @@ class OdeintAdjointMethod(torch.autograd.Function):
         return (None, None, adj_y, time_vjps, None, None, None, None, None, None, None, None, None, None, *adj_params)
 
 
-def odeint_adjoint(func, y0, t, *, rtol=1e-7, atol=1e-9, method=None, options=None, event_fn=None,
+def odeint_adjoint(func, y0, v0, t, *, rtol=1e-7, atol=1e-9, method=None, options=None, event_fn=None,
                    adjoint_rtol=None, adjoint_atol=None, adjoint_method=None, adjoint_options=None, adjoint_params=None):
 
     # We need this in order to access the variables inside this module,
@@ -195,7 +197,7 @@ def odeint_adjoint(func, y0, t, *, rtol=1e-7, atol=1e-9, method=None, options=No
     state_norm = options["norm"]
     handle_adjoint_norm_(adjoint_options, shapes, state_norm)
 
-    ans = OdeintAdjointMethod.apply(shapes, func, y0, t, rtol, atol, method, options, event_fn, adjoint_rtol, adjoint_atol,
+    ans = OdeintAdjointMethod.apply(shapes, func, y0, v0, t, rtol, atol, method, options, event_fn, adjoint_rtol, adjoint_atol,
                                     adjoint_method, adjoint_options, t.requires_grad, *adjoint_params)
 
     if event_fn is None:

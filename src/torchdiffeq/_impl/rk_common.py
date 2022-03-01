@@ -107,10 +107,10 @@ def rk4_alt_step_func(func, t0, dt, t1, y0, v0, f0=None, perturb=False):
     """Smaller error with slightly more compute."""
     k1 = f0
     if k1 is None:
-        k1 = func(t0, torch.cat((y0, v0), dim=0), perturb = Perturb.NEXT if perturb else Perturb.NONE)
-    k2=func(t0 + dt * _one_third, torch.cat((y0 + dt * k1 * _one_third, v0), dim=0))
-    k3=func(t0 + dt * _two_thirds, torch.cat((y0 + dt * (k2 - k1 * _one_third), v0), dim = 0))
-    k4=func(t1, torch.cat((y0 + dt * (k1 - k2 + k3), v0), dim=0), perturb=Perturb.PREV if perturb else Perturb.NONE)
+        k1 = func(t0, torch.cat((y0, v0), dim=-1), perturb = Perturb.NEXT if perturb else Perturb.NONE)
+    k2=func(t0 + dt * _one_third, torch.cat((y0 + dt * k1 * _one_third, v0), dim=-1))
+    k3=func(t0 + dt * _two_thirds, torch.cat((y0 + dt * (k2 - k1 * _one_third), v0), dim=-1))
+    k4=func(t1, torch.cat((y0 + dt * (k1 - k2 + k3), v0), dim=-1), perturb=Perturb.PREV if perturb else Perturb.NONE)
     return (k1 + 3 * (k2 + k3) + k4) * dt * 0.125
 
 
