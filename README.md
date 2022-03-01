@@ -61,12 +61,12 @@ poetry install
 ```
 3. Запустить скрипт
 ```
-poetry run streamlit run src/experiment_1.py -n exp_name
+poetry run python src/experiment_1.py -n exp_name
 ```
 
 Чтобы узнать о параметрах скрипта, выполнить
 ```
-poetry run streamlit run src/experiment_1.py --help
+poetry run python src/experiment_1.py --help
 ```
 
 
