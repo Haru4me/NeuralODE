@@ -72,7 +72,7 @@ if __name__ == '__main__':
     SETTINGS['n_layes'] = st.sidebar.number_input(label='Layers number', min_value=1, max_value=20, value=1, step=1, help='Number of hiden layers')
     SETTINGS['act_fun'] = st.sidebar.selectbox(label='Activation function', options=ACTIVATION.keys())
     SETTINGS['adjoint'] = st.sidebar.checkbox(label='Use abjoint method', value=False, help='https://arxiv.org/abs/1806.07366')
-    SETTINGS['clicked'] = st.sidebar.button('Start runinig', disabled=False)
+    SETTINGS['clicked'] = st.sidebar.button('Start runnig', disabled=False)
 
     if SETTINGS['clicked']:
 
