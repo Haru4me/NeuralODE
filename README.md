@@ -59,7 +59,6 @@ pip install poetry
 ```
 poetry install
 ```
-И далее
 3. Запустить скрипт
 ```
 poetry run streamlit run src/experiment_1.py -n exp_name
