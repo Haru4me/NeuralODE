@@ -26,7 +26,7 @@ dy/dt = f(t, y, v)    y(t_0, v_0) = y_0
 
 Далее в браузере откроется следующего вида окно
 <p align="center">
-<img align="middle" src="./assets/GUI.gif" alt="GUI Demo" width="500" height="250" />
+<img align="middle" src="./assets/GUI.gif" alt="GUI Demo" width="2560" height="1324" />
 </p>
 
 Далее необходимо выставить настройки и нажать __Start running__.
