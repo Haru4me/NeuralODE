@@ -66,7 +66,7 @@ poetry run streamlit run src/experiment_1.py -n exp_name
 
 Чтобы узнать о параметрах скрипта, выполнить
 ```
-poetry run streamlit run src/experiment_1.py -n exp_name -h
+poetry run streamlit run src/experiment_1.py -h
 ```
 
 
