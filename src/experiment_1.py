@@ -98,11 +98,13 @@ if __name__ == "__main__":
         Path(f"assets/{opt.name}").mkdir(exist_ok=True)
         Path(f"assets/{opt.name}/imgs").mkdir(exist_ok=True)
 
-        criterion = CRITERION[opt.loss]()
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+        criterion = CRITERION[opt.loss]().to(device)
         metric = METRICS[opt.metric]()
         n_layers = opt.n_layes
         act_fun = ACTIVATION[opt.act_fun]
-        func = ODEF(8, n_layers, act_fun)
+        func = ODEF(8, n_layers, act_fun).to(device)
         optimizer = OPTIM[opt.optim](func.parameters(), lr=opt.lr)
         dataloader = DataLoader(Data(), batch_size=opt.batch_size)
         val = DataLoader(Data(val=True), batch_size=opt.batch_size)

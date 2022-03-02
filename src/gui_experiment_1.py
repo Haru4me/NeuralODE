@@ -87,16 +87,18 @@ if __name__ == '__main__':
 
             logger.info(f"Start {SETTINGS['name']}")
 
+            device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
             if SETTINGS['adjoint']:
                 from torchdiffeq import odeint_adjoint as odeint
             else:
                 from torchdiffeq import odeint
 
-            criterion = CRITERION[SETTINGS['loss']]()
+            criterion = CRITERION[SETTINGS['loss']]().to(device)
             metric = METRICS[SETTINGS['metric']]()
             n_layers = SETTINGS['n_layes']
             act_fun = ACTIVATION[SETTINGS['act_fun']]
-            func = ODEF(8, n_layers, act_fun)
+            func = ODEF(8, n_layers, act_fun).to(device)
             optimizer = OPTIM[SETTINGS['optim']](func.parameters(), lr=SETTINGS['lr'])
             with st.spinner('Load data...'):
                 dataloader = DataLoader(Data(), batch_size=SETTINGS['batch_size'])
