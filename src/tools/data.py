@@ -31,6 +31,8 @@ class Data(Dataset):
         else:
             self.pairs = np.random.permutation(train_pairs).tolist()
 
+        self.df.set_index(['ind', 'datetime'], inplace=True)
+
     def __len__(self) -> int:
         return len(self.pairs)
 
@@ -38,10 +40,10 @@ class Data(Dataset):
         i, t1, t2 = self.pairs[index % self.__len__()]
         df = self.df
 
-        data = pd.concat((df[(df.ind == i) & (df.datetime == t1) & (df.datetime < t2)],
-                          df[(df.ind == i) & (df.datetime > t1) & (df.datetime == t2)].iloc[[0]]), axis=0)
+        data = pd.concat((df.loc[i, t1],
+                          df.loc[i, t2].iloc[[0]]), axis=0)
 
         y = data[['val_1', 'val_2']].to_numpy()
-        X = data[['t2m', 'td2m', 'ff', 'R12', 'phi', 'air', 'soilw', 'precip']].to_numpy()
+        X = data[['t2m', 'td2m', 'ff', 'R12', 'phi', 'air', 'soilw', 'precip']].to_numpy()[:80]
 
         return torch.Tensor(X), torch.Tensor(y)

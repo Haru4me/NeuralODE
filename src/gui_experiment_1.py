@@ -101,8 +101,8 @@ if __name__ == '__main__':
             func = ODEF(8, n_layers, act_fun).to(device)
             optimizer = OPTIM[SETTINGS['optim']](func.parameters(), lr=SETTINGS['lr'])
             with st.spinner('Load data...'):
-                dataloader = DataLoader(Data(), batch_size=SETTINGS['batch_size'])
-                val = DataLoader(Data(val=True), batch_size=SETTINGS['batch_size'])
+                dataloader = DataLoader(Data(), batch_size=SETTINGS['batch_size'], num_workers=1)
+                val = DataLoader(Data(val=True), batch_size=SETTINGS['batch_size'], num_workers=1)
             st.success('Data is loaded!')
             st.info('Start experiment model')
 

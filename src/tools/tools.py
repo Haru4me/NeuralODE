@@ -110,7 +110,7 @@ def experiment(odeint,
                     optimizer.zero_grad()
                     v, z = batch
                     v, z = v.to(device), z.to(device)
-                    z0, z1, t = z[:, 0], z[:, 1], torch.linspace(0, 1, 81, device=device)
+                    z0, z1, t = z[:, 0], z[:, -1], torch.linspace(0, 1, 81, device=device)
 
                     preds = odeint(func, z0, v, t, method=method)[-1]
                     loss = criterion(preds, z1)
