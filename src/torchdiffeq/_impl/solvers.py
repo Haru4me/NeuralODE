@@ -103,7 +103,7 @@ class FixedGridODESolver(metaclass=abc.ABCMeta):
         y0 = self.y0
         for t0, t1 in zip(time_grid[:-1], time_grid[1:]):
             dt = t1 - t0
-            v0, v1 = self.v[:,j-1], self.v[:,j]
+            v0 = self.v[:,j-1]
             dy, f0 = self._step_func(self.func, t0, dt, t1, y0, v0)
             y1 = y0 + dy
 
@@ -111,7 +111,7 @@ class FixedGridODESolver(metaclass=abc.ABCMeta):
                 if self.interp == "linear":
                     solution[j] = self._linear_interp(t0, t1, y0, y1, t[j])
                 elif self.interp == "cubic":
-                    f1 = self.func(t1, torch.cat((y1, v1), dim=-1))
+                    f1 = self.func(t1, y1) #! Don't work
                     solution[j] = self._cubic_hermite_interp(t0, y0, f0, t1, y1, f1, t[j])
                 else:
                     raise ValueError(f"Unknown interpolation method {self.interp}")
