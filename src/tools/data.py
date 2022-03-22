@@ -13,8 +13,8 @@ class Data(Dataset):
 
     def __init__(self, val:bool=False):
 
-        agro = pd.read_parquet('Data/agro.parquet').sort_values(by=['ind', 'datetime'])
-        syn = pd.read_parquet('Data/new_syn.parquet').sort_values(by=['ind', 'datetime'])
+        agro = pd.read_parquet('data/agro.parquet').sort_values(by=['ind', 'datetime'])
+        syn = pd.read_parquet('data/new_syn.parquet').sort_values(by=['ind', 'datetime'])
 
         self.df = syn.merge(agro, on=['ind', 'datetime']).dropna()
         pairs = self.df[['ind', 'datetime']].drop_duplicates()
