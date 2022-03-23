@@ -4,6 +4,7 @@
 """
 
 import logging.config
+from random import shuffle
 from traceback import format_exc
 import streamlit as st
 import torch
@@ -18,7 +19,7 @@ import numpy as np
 import pandas as pd
 from pathlib import Path
 
-from tools.data import Data
+from tools.data import DataNPZ
 from tools.model import ODEF
 
 
@@ -101,8 +102,8 @@ if __name__ == '__main__':
             func = ODEF(8, n_layers, act_fun).to(device)
             optimizer = OPTIM[SETTINGS['optim']](func.parameters(), lr=SETTINGS['lr'])
             with st.spinner('Load data...'):
-                dataloader = DataLoader(Data(), batch_size=SETTINGS['batch_size'], num_workers=1)
-                val = DataLoader(Data(val=True), batch_size=SETTINGS['batch_size'], num_workers=1)
+                dataloader = DataLoader(DataNPZ(), batch_size=SETTINGS['batch_size'], shuffle=True)
+                val = DataLoader(DataNPZ(val=True), batch_size=SETTINGS['batch_size'], shuffle=True)
             st.success('Data is loaded!')
             st.info('Start experiment model')
 

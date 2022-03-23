@@ -18,8 +18,8 @@ class ODEF(nn.Module):
             net.append(func())
             net.append(nn.Linear(2**(i+4), 2**(i+5)))
 
-        net.append(nn.Linear(2**(i+5), 2))
         net.append(func())
+        net.append(nn.Linear(2**(i+5), 2))
 
         self.net = nn.Sequential(*net)
 

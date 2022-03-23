@@ -4,6 +4,7 @@ Datsets implementation file
 from random import shuffle
 import pandas as pd
 import numpy as np
+from pathlib import Path
 import torch
 from torch.utils.data import Dataset
 from sklearn.model_selection import train_test_split
@@ -47,3 +48,27 @@ class Data(Dataset):
         X = data[['t2m', 'td2m', 'ff', 'R12', 'phi', 'air', 'soilw', 'precip']].to_numpy()[:80]
 
         return torch.Tensor(X), torch.Tensor(y)
+
+
+class DataNPZ(Dataset):
+
+    def __init__(self, val: bool = False):
+
+        self.paths = list(Path('data/dataset').glob('*.npz'))
+        train_paths, val_paths = train_test_split(self.paths, test_size=0.1, shuffle=False)
+
+        if val:
+            self.paths = val_paths
+        else:
+            self.paths = train_paths
+
+    def __len__(self):
+        return len(self.paths)
+
+
+    def __getitem__(self, index):
+
+        path = self.paths[index % self.__len__()]
+        data = np.load(path)
+
+        return torch.Tensor(data['feature']), torch.Tensor(data['target'])

@@ -2,8 +2,9 @@
     EXPERIMENT
 """
 
+from random import shuffle
 from tools.model import ODEF
-from tools.data import Data
+from tools.data import DataNPZ
 import argparse
 import logging.config
 from traceback import format_exc
@@ -106,8 +107,8 @@ if __name__ == "__main__":
         act_fun = ACTIVATION[opt.act_fun]
         func = ODEF(8, n_layers, act_fun).to(device)
         optimizer = OPTIM[opt.optim](func.parameters(), lr=opt.lr)
-        dataloader = DataLoader(Data(), batch_size=opt.batch_size)
-        val = DataLoader(Data(val=True), batch_size=opt.batch_size)
+        dataloader = DataLoader(DataNPZ(), batch_size=opt.batch_size, shuffle=True)
+        val = DataLoader(DataNPZ(val=True), batch_size=opt.batch_size, shuffle=True)
 
         experiment(odeint, func, dataloader, val, optimizer, criterion, metric, opt, LOGGING_CONFIG, streamlit=False)
 
