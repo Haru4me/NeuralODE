@@ -1,0 +1,42 @@
+{
+    "exp1": {
+        "lr": 0.01,
+        "batch_size": 500,
+        "e": 250,
+        "m": "euler",
+        "lf": "MAE",
+        "l": "16 32 16",
+        "emb": "16 3",
+        "af": "Tanh"
+    },
+    "exp2": {
+        "lr": 0.01,
+        "batch_size": 500,
+        "e": 250,
+        "m": "rk4",
+        "lf": "MAE",
+        "l": "16 32 16",
+        "emb": "16 3",
+        "af": "Tanh"
+    },
+    "exp3": {
+        "lr": 0.01,
+        "batch_size": 500,
+        "e": 250,
+        "m": "euler",
+        "lf": "MSE",
+        "l": "16 32 16",
+        "emb": "16 3",
+        "af": "Tanh"
+    },
+    "exp4": {
+        "lr": 0.01,
+        "batch_size": 500,
+        "e": 250,
+        "m": "euler",
+        "lf": "SmoothMAE",
+        "l": "16 32 16",
+        "emb": "16 3",
+        "af": "Tanh"
+    }
+}

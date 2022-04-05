@@ -25,7 +25,7 @@ class Data(Dataset):
 
         self.pairs = [(i, t0, t1) for i, t0, t1 in zip(pairs.ind, pairs.datetime[:-1], pairs.datetime[1:]) if 10 <= (t1-t0).days <= 11]
 
-        train_pairs, val_pairs = train_test_split(self.pairs, test_size=0.1, shuffle=False)
+        train_pairs, val_pairs = train_test_split(self.pairs, test_size=0.1, shuffle=True)
 
         if val:
             self.pairs = np.random.permutation(val_pairs).tolist()
@@ -52,15 +52,22 @@ class Data(Dataset):
 
 class DataNPZ(Dataset):
 
-    def __init__(self, val: bool = False):
+    def __init__(self, type: str = 'train'):
 
-        self.paths = list(Path('data/dataset').glob('*.npz'))
-        train_paths, val_paths = train_test_split(self.paths, test_size=0.1, shuffle=False)
+        paths = list(Path('./data/dataset').glob('*.npz'))
+        sample_paths = sorted(list(Path('./data/dataset').glob('*57603_2015*.npz')))
+        """
+        for pth in sample_paths:
+            paths.pop(paths.index(pth))
+        """
+        train_paths, val_paths = train_test_split(paths, test_size=0.1, shuffle=True)
 
-        if val:
+        if type == 'val':
             self.paths = val_paths
-        else:
+        elif type == 'train':
             self.paths = train_paths
+        elif type == 'sample':
+            self.paths = sample_paths
 
     def __len__(self):
         return len(self.paths)

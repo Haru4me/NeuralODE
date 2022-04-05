@@ -30,15 +30,15 @@ SOLVERS = ['euler', 'rk4']
 CRITERION = {
     'MSE': nn.MSELoss,
     'MAE': nn.L1Loss,
-    'Smooth MAE': nn.SmoothL1Loss
+    'SmoothMAE': nn.SmoothL1Loss
 }
 
 OPTIM = {
-    'Adam': torch.optim.Adam,
-    'SGD': None
+    'AMSGrad': torch.optim.Adam
 }
 
 METRICS = {
+    'MyMetric': MyMetric,
     'R2Score': R2Score,
     'MAPE': MAPE,
     'WAPE': WAPE
@@ -66,11 +66,12 @@ parser.add_argument('-interval', type=int, default=1, help='Интервал д�
 parser.add_argument('-n', '--name', type=str, required=True, help='Название эксперимента')
 parser.add_argument('-m', '--method', type=str, choices=SOLVERS, default='euler', help='Выбор метода решения ОДУ')
 parser.add_argument('-lf', '--loss', type=str, choices=CRITERION.keys(), default='MSE', help='Выбор функции потерь')
-parser.add_argument('-mx', '--metric', type=str, choices=METRICS.keys(), default='R2Score', help='Выбор метрики')
-parser.add_argument('-opt', '--optim', type=str, choices=OPTIM.keys(), default='Adam', help='Выбор меотда оптимизации')
+parser.add_argument('-mx', '--metric', type=str, choices=METRICS.keys(), default='MyMetric', help='Выбор метрики')
+parser.add_argument('-opt', '--optim', type=str, choices=OPTIM.keys(), default='AMSGrad', help='Выбор меотда оптимизации')
 parser.add_argument('-e', '--num_epoch', type=int, default=250, help='Количество эпох')
-parser.add_argument('--n_layes', type=int, default=1, help='Кол-во скрытых весов')
-parser.add_argument('--act_fun', type=str, choices=ACTIVATION.keys(), default='Tanh', help='Функция активации')
+parser.add_argument('-l' ,'--layers', nargs='+', type=int, required=True, help='Кол-во весов скрытого слоя')
+parser.add_argument('-emb' ,'--embeding', nargs='+', type=int, required=True, help='Расмерность вектора эмбединга')
+parser.add_argument('-af' ,'--act_fun', type=str, choices=ACTIVATION.keys(), default='Tanh', help='Функция активации')
 opt = parser.parse_args()
 
 Path(f'logs/').mkdir(exist_ok=True)
@@ -84,6 +85,7 @@ else:
 
 logging.config.dictConfig(LOGGING_CONFIG)
 logger = logging.getLogger(__name__)
+
 
 if __name__ == "__main__":
 
@@ -103,14 +105,16 @@ if __name__ == "__main__":
 
         criterion = CRITERION[opt.loss]().to(device)
         metric = METRICS[opt.metric]()
-        n_layers = opt.n_layes
+        layers = opt.layers
+        embeding = opt.embeding
         act_fun = ACTIVATION[opt.act_fun]
-        func = ODEF(8, n_layers, act_fun).to(device)
+        func = ODEF(layers, embeding, act_fun).to(device)
         optimizer = OPTIM[opt.optim](func.parameters(), lr=opt.lr)
-        dataloader = DataLoader(DataNPZ(), batch_size=opt.batch_size, shuffle=True)
-        val = DataLoader(DataNPZ(val=True), batch_size=opt.batch_size, shuffle=True)
+        dataloader = DataLoader(DataNPZ('train'), batch_size=opt.batch_size, shuffle=True)
+        val = DataLoader(DataNPZ('val'), batch_size=opt.batch_size, shuffle=True)
+        sample = DataLoader(DataNPZ('sample'), batch_size=11)
 
-        experiment(odeint, func, dataloader, val, optimizer, criterion, metric, opt, LOGGING_CONFIG, streamlit=False)
+        experiment(odeint, func, dataloader, val, sample, optimizer, criterion, metric, opt, LOGGING_CONFIG, streamlit=False)
 
     except Exception as exp:
 
