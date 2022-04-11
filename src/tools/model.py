@@ -4,6 +4,7 @@ ODEF samples file
 
 import enum
 from re import M
+from turtle import clear
 import torch
 import torch.nn as nn
 import numpy as np
@@ -23,7 +24,7 @@ class ODEF(nn.Module):
                 m.bias.data.fill_(0)
 
         self.input = nn.Sequential(nn.Linear(10+sum(embs), layers[0]), func()).apply(init_weights)
-        self.soil_emb = nn.Embedding(100, embs[0])
+        self.soil_emb = nn.Embedding(32, embs[0])
         self.cover_emb = nn.Embedding(16, embs[1])
 
         net = []
@@ -47,9 +48,59 @@ class ODEF(nn.Module):
         e1 = self.soil_emb(e1)
         e2 = self.cover_emb(e2)
 
-        x = torch.concat((x, e1, e2), dim=-1)
+        x = torch.cat((x, e1, e2), dim=-1)
 
         x = self.input(x)
         x = self.hiden(x)
 
         return self.output(x)
+
+
+class LinearODEF(nn.Module):
+
+    def __init__(self):
+
+        super().__init__()
+
+        def init_weights(m):
+
+            if isinstance(m, nn.Linear):
+                a = 1/np.sqrt(m.in_features)
+                m.weight.data.uniform_(-a, a)
+                m.bias.data.fill_(0)
+
+        self.reg = nn.Linear(12, 2).apply(init_weights)
+
+    def forward(self, t, x):
+        return self.reg(x)
+
+
+class EmbededLinearODEF(nn.Module):
+
+    def __init__(self):
+
+        super().__init__()
+
+        def init_weights(m):
+
+            if isinstance(m, nn.Linear):
+                a = 1/np.sqrt(m.in_features)
+                m.weight.data.uniform_(-a, a)
+                m.bias.data.fill_(0)
+
+        self.soil_emb = nn.Embedding(32, 32)
+        self.cover_emb = nn.Embedding(16, 16)
+        self.reg = nn.Linear(12+16+32, 2).apply(init_weights)
+
+    def forward(self, t, x):
+
+        e1 = x[:, -2].long()
+        e2 = x[:, -1].long()
+        x = x[:, :-2]
+
+        e1 = self.soil_emb(e1)
+        e2 = self.cover_emb(e2)
+
+        x = torch.cat((x, e1, e2), dim=-1)
+
+        return self.reg(x)

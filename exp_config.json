@@ -1,40 +1,40 @@
 {
-    "exp1": {
+    "exp5": {
         "lr": 0.01,
         "batch_size": 500,
-        "e": 250,
-        "m": "euler",
-        "lf": "MAE",
-        "l": "16 32 16",
-        "emb": "16 3",
-        "af": "Tanh"
-    },
-    "exp2": {
-        "lr": 0.01,
-        "batch_size": 500,
-        "e": 250,
+        "e": 100,
         "m": "rk4",
         "lf": "MAE",
         "l": "16 32 16",
         "emb": "16 3",
         "af": "Tanh"
     },
-    "exp3": {
+    "exp6": {
         "lr": 0.01,
         "batch_size": 500,
-        "e": 250,
-        "m": "euler",
+        "e": 100,
+        "m": "rk4",
         "lf": "MSE",
         "l": "16 32 16",
         "emb": "16 3",
         "af": "Tanh"
     },
-    "exp4": {
+    "exp7": {
         "lr": 0.01,
         "batch_size": 500,
-        "e": 250,
-        "m": "euler",
+        "e": 100,
+        "m": "rk4",
         "lf": "SmoothMAE",
+        "l": "16 32 16",
+        "emb": "16 3",
+        "af": "Tanh"
+    },
+    "exp8": {
+        "lr": 0.01,
+        "batch_size": 500,
+        "e": 100,
+        "m": "rk4",
+        "lf": "WAPE",
         "l": "16 32 16",
         "emb": "16 3",
         "af": "Tanh"

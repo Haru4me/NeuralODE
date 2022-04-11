@@ -22,7 +22,7 @@ class MAPE(nn.Module):
 
     def forward(self, input: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
         eps = 1e-15
-        return 100*torch.sum(torch.abs((input-target)/(target+eps)))/target.shape[0]
+        return 100*torch.mean(torch.abs((input-target)/(target+eps)))#/target.shape[0]
 
 
 class WAPE(nn.Module):

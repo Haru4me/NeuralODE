@@ -15,6 +15,10 @@ plt.style.use('seaborn')
 
 def draw_sample(stat, name, epoch, streamlit, smpl, gt):
 
+    if torch.cuda.is_available():
+        smpl = smpl.cpu().detach()
+        gt = gt.cpu().detach()
+
     epoches = np.arange(stat.shape[0])
     fig = plt.figure(figsize=(14, 15))
 

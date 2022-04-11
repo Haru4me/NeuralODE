@@ -2,8 +2,7 @@
     EXPERIMENT
 """
 
-from random import shuffle
-from tools.model import ODEF
+from tools.model import ODEF, LinearODEF
 from tools.data import DataNPZ
 import argparse
 import logging.config
@@ -12,14 +11,13 @@ from traceback import format_exc
 import torch
 import torch.nn as nn
 from torch.optim import optimizer
-from torch.utils.data import DataLoader, Dataset
+from torch.utils.data import DataLoader
 
 from tools.settings import LOGGING_CONFIG
 from tools.tools import experiment
 from tools.metrics import *
 
 import numpy as np
-from tqdm import tqdm
 from pathlib import Path
 import matplotlib.pyplot as plt
 plt.style.use('seaborn')
@@ -30,7 +28,10 @@ SOLVERS = ['euler', 'rk4']
 CRITERION = {
     'MSE': nn.MSELoss,
     'MAE': nn.L1Loss,
-    'SmoothMAE': nn.SmoothL1Loss
+    'SmoothMAE': nn.SmoothL1Loss,
+    'MyMetric': MyMetric,
+    'MAPE': MAPE,
+    'WAPE': WAPE
 }
 
 OPTIM = {
@@ -56,7 +57,7 @@ ACTIVATION = {
 }
 
 parser = argparse.ArgumentParser(prog='NeuralODE soil experiment',
-                                 description="""Скрипт запускает эксперимент №1""",
+                                 description="""Скрипт запускает эксперимент""",
                                  formatter_class=argparse.RawTextHelpFormatter)
 
 parser.add_argument('-adjoint', action='store_true', help='Использовать adjoint_odeint или дефолтный')
@@ -108,7 +109,8 @@ if __name__ == "__main__":
         layers = opt.layers
         embeding = opt.embeding
         act_fun = ACTIVATION[opt.act_fun]
-        func = ODEF(layers, embeding, act_fun).to(device)
+        #func = ODEF(layers, embeding, act_fun).to(device)
+        func = LinearODEF().to(device)
         optimizer = OPTIM[opt.optim](func.parameters(), lr=opt.lr)
         dataloader = DataLoader(DataNPZ('train'), batch_size=opt.batch_size, shuffle=True)
         val = DataLoader(DataNPZ('val'), batch_size=opt.batch_size, shuffle=True)
