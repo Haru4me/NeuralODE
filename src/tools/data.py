@@ -55,12 +55,13 @@ class DataNPZ(Dataset):
     def __init__(self, type: str = 'train'):
 
         paths = list(Path('./data/dataset').glob('*.npz'))
+        paths = np.random.permutation(paths).tolist()
         sample_paths = sorted(list(Path('./data/dataset').glob('*57603_2015*.npz')))
-        """
+
         for pth in sample_paths:
             paths.pop(paths.index(pth))
-        """
-        train_paths, val_paths = train_test_split(paths, test_size=0.1, shuffle=True)
+
+        train_paths, val_paths = train_test_split(paths, test_size=0.1)
 
         if type == 'val':
             self.paths = val_paths

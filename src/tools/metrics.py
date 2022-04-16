@@ -10,7 +10,7 @@ class R2Score(nn.Module):
         super().__init__()
 
     def forward(self, input: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
-        eps = 1e-15
+        eps = 1e-8
         return 1 - torch.sum((input - target)**2)/(torch.sum((target - target.mean())**2)+eps)
 
 
@@ -21,8 +21,8 @@ class MAPE(nn.Module):
         super().__init__()
 
     def forward(self, input: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
-        eps = 1e-15
-        return 100*torch.mean(torch.abs((input-target)/(target+eps)))#/target.shape[0]
+        eps = 1e-8
+        return torch.mean(torch.abs((input-target)/(target+eps)))
 
 
 class WAPE(nn.Module):
@@ -32,8 +32,19 @@ class WAPE(nn.Module):
         super().__init__()
 
     def forward(self, input: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
-        eps = 1e-15
-        return 100*torch.sum(torch.abs(input-target))/(torch.sum(torch.abs(target))+eps)
+        eps = 1e-8
+        return torch.sum(torch.abs(input-target))/(torch.sum(torch.abs(target))+eps)
+
+
+class SMAPE(nn.Module):
+
+    def __init__(self):
+
+        super().__init__()
+
+    def forward(self, input: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+        eps = 1e-8
+        return torch.mean(torch.abs(2*(input-target))/(input+target+eps))
 
 
 class MyMetric(nn.Module):
@@ -43,5 +54,5 @@ class MyMetric(nn.Module):
         super().__init__()
 
     def forward(self, inputs: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
-        eps=1e-15
+        eps=1e-8
         return F.mse_loss(inputs[-1], target)/(F.mse_loss(inputs[0], target) + eps)

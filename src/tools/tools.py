@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
-from torch.optim.lr_scheduler import ReduceLROnPlateau
+from torch.optim.lr_scheduler import LambdaLR
 import torch
 
 plt.style.use('seaborn')
@@ -123,7 +123,8 @@ def experiment(odeint,
         pbar = tqdm(range(num_epoch))
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    scheduler = ReduceLROnPlateau(optimizer, 'min')
+    lambda_lr = lambda epoch: 0.1 ** (epoch / 150)
+    scheduler = LambdaLR(optimizer, lr_lambda=lambda_lr)
     stats = pd.DataFrame([], columns=['train_loss', 'val_loss', 'train_metric', 'val_metric', 'val_loss_1', 'val_loss_2', 'train_loss_1', 'train_loss_2'])
 
     with pbar:
@@ -188,7 +189,7 @@ def experiment(odeint,
                     val_loss_2.append(criterion(preds[:, 1], z1[:, 1]).item())
                     val_metric.append(metric([first, preds], z1).item())
 
-                scheduler.step(loss)
+                scheduler.step()
 
                 logger.info('Epoch %i\t–\tTrain loss: %.6f\t–\tTrain metric: %.6f\t–\tVal loss: %.6f\t–\tVal metric: %.6f' % (
                     epoch, np.mean(run_loss), np.mean(run_metric), np.mean(val_loss), np.mean(val_metric)))

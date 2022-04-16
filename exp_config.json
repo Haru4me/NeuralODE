@@ -1,42 +1,62 @@
 {
+    "exp1": {
+        "lr": 0.01,
+        "batch_size": 500,
+        "e": 150,
+        "m": "rk4",
+        "lf": "MAE",
+        "l": "126 256",
+        "emb": "6 6",
+        "af": "Tanh"
+    },
+    "exp2": {
+        "lr": 0.01,
+        "batch_size": 500,
+        "e": 150,
+        "m": "rk4",
+        "lf": "MSE",
+        "l": "126 256",
+        "emb": "6 6",
+        "af": "Tanh"
+    },
+    "exp3": {
+        "lr": 0.01,
+        "batch_size": 500,
+        "e": 150,
+        "m": "rk4",
+        "lf": "SmoothMAE",
+        "l": "126 256",
+        "emb": "6 6",
+        "af": "Tanh"
+    },
+    "exp4": {
+        "lr": 0.01,
+        "batch_size": 500,
+        "e": 150,
+        "m": "rk4",
+        "lf": "WAPE",
+        "l": "126 256",
+        "emb": "6 6",
+        "af": "Tanh"
+    },
     "exp5": {
         "lr": 0.01,
         "batch_size": 500,
-        "e": 100,
+        "e": 150,
         "m": "rk4",
-        "lf": "MAE",
-        "l": "16 32 16",
-        "emb": "16 3",
+        "lf": "SMAPE",
+        "l": "126 256",
+        "emb": "6 6",
         "af": "Tanh"
     },
     "exp6": {
         "lr": 0.01,
         "batch_size": 500,
-        "e": 100,
+        "e": 150,
         "m": "rk4",
-        "lf": "MSE",
-        "l": "16 32 16",
-        "emb": "16 3",
-        "af": "Tanh"
-    },
-    "exp7": {
-        "lr": 0.01,
-        "batch_size": 500,
-        "e": 100,
-        "m": "rk4",
-        "lf": "SmoothMAE",
-        "l": "16 32 16",
-        "emb": "16 3",
-        "af": "Tanh"
-    },
-    "exp8": {
-        "lr": 0.01,
-        "batch_size": 500,
-        "e": 100,
-        "m": "rk4",
-        "lf": "WAPE",
-        "l": "16 32 16",
-        "emb": "16 3",
+        "lf": "MyMetric",
+        "l": "126 256",
+        "emb": "6 6",
         "af": "Tanh"
     }
 }

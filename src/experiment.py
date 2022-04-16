@@ -2,7 +2,7 @@
     EXPERIMENT
 """
 
-from tools.model import ODEF, LinearODEF
+from tools.model import *
 from tools.data import DataNPZ
 import argparse
 import logging.config
@@ -27,11 +27,13 @@ SOLVERS = ['euler', 'rk4']
 
 CRITERION = {
     'MSE': nn.MSELoss,
+    'MSE': nn.MSELoss,
     'MAE': nn.L1Loss,
     'SmoothMAE': nn.SmoothL1Loss,
     'MyMetric': MyMetric,
     'MAPE': MAPE,
-    'WAPE': WAPE
+    'WAPE': WAPE,
+    'SMAPE': SMAPE
 }
 
 OPTIM = {
@@ -88,6 +90,14 @@ logging.config.dictConfig(LOGGING_CONFIG)
 logger = logging.getLogger(__name__)
 
 
+def init_weights(m):
+
+    if isinstance(m, nn.Linear):
+        a = np.sqrt(6)/np.sqrt(m.in_features + m.out_features)
+        m.weight.data.uniform_(-a, a)
+        m.bias.data.fill_(0)
+
+
 if __name__ == "__main__":
 
     try:
@@ -109,8 +119,8 @@ if __name__ == "__main__":
         layers = opt.layers
         embeding = opt.embeding
         act_fun = ACTIVATION[opt.act_fun]
-        #func = ODEF(layers, embeding, act_fun).to(device)
-        func = LinearODEF().to(device)
+        #func = ODEF(layers, embeding, act_fun).to(device).apply(init_weights)
+        func = LinearODEF().to(device).apply(init_weights)
         optimizer = OPTIM[opt.optim](func.parameters(), lr=opt.lr)
         dataloader = DataLoader(DataNPZ('train'), batch_size=opt.batch_size, shuffle=True)
         val = DataLoader(DataNPZ('val'), batch_size=opt.batch_size, shuffle=True)
