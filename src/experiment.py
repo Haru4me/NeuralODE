@@ -12,6 +12,9 @@ import torch
 import torch.nn as nn
 from torch.optim import optimizer
 from torch.utils.data import DataLoader
+from torchmetrics import MeanAbsolutePercentageError
+from torchmetrics import SymmetricMeanAbsolutePercentageError
+from torchmetrics import WeightedMeanAbsolutePercentageError
 
 from tools.settings import LOGGING_CONFIG
 from tools.tools import experiment
@@ -22,18 +25,19 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 plt.style.use('seaborn')
 
-
 SOLVERS = ['euler', 'rk4']
 
 CRITERION = {
-    'MSE': nn.MSELoss,
-    'MSE': nn.MSELoss,
-    'MAE': nn.L1Loss,
-    'SmoothMAE': nn.SmoothL1Loss,
-    'MyMetric': MyMetric,
-    'MAPE': MAPE,
-    'WAPE': WAPE,
-    'SMAPE': SMAPE
+    'MSE': nn.MSELoss(),
+    'MSE': nn.MSELoss(),
+    'MAE': nn.L1Loss(),
+    'SmoothMAE': nn.SmoothL1Loss(),
+    'MAPE': MeanAbsolutePercentageError(),
+    'WAPE': WeightedMeanAbsolutePercentageError(),
+    'SMAPE': SymmetricMeanAbsolutePercentageError(),
+    'RMSLE': RMSLE(),
+    'MAGE': MAGE(),
+    'MyMetric': MyMetric(),
 }
 
 OPTIM = {
@@ -41,10 +45,10 @@ OPTIM = {
 }
 
 METRICS = {
-    'MyMetric': MyMetric,
-    'R2Score': R2Score,
-    'MAPE': MAPE,
-    'WAPE': WAPE
+    'MyMetric': MyMetric(),
+    'R2Score': R2Score(),
+    'MAPE': MAPE(),
+    'WAPE': WAPE(),
 }
 
 ACTIVATION = {
@@ -52,10 +56,17 @@ ACTIVATION = {
     'Tanhshrink': nn.Tanhshrink,
     'Sigmoid': nn.Sigmoid,
     'LogSigmoid': nn.LogSigmoid,
+    'RELU': nn.ReLU,
     'ELU': nn.ELU,
     'SELU': nn.SELU,
     'CELU': nn.CELU,
     'GELU': nn.GELU
+}
+
+MODEL = {
+    'Linear': LinearODEF,
+    'EmbededLinear': EmbededLinearODEF,
+    'MultyLayer': MultyLayerODEF
 }
 
 parser = argparse.ArgumentParser(prog='NeuralODE soil experiment',
@@ -75,6 +86,7 @@ parser.add_argument('-e', '--num_epoch', type=int, default=250, help='Колич
 parser.add_argument('-l' ,'--layers', nargs='+', type=int, required=True, help='Кол-во весов скрытого слоя')
 parser.add_argument('-emb' ,'--embeding', nargs='+', type=int, required=True, help='Расмерность вектора эмбединга')
 parser.add_argument('-af' ,'--act_fun', type=str, choices=ACTIVATION.keys(), default='Tanh', help='Функция активации')
+parser.add_argument('-mod' ,'--model', type=str, choices=MODEL.keys(), default='Linear', help='Вид модели аппроксимирующей производную')
 opt = parser.parse_args()
 
 Path(f'logs/').mkdir(exist_ok=True)
@@ -89,13 +101,19 @@ else:
 logging.config.dictConfig(LOGGING_CONFIG)
 logger = logging.getLogger(__name__)
 
+if opt.act_fun == 'RELU':
+    def init_weights(m):
 
-def init_weights(m):
+        if isinstance(m, nn.Linear):
+            m.weight.data.normal_(0, 2/m.in_features)
+            m.bias.data.fill_(0)
+else:
+    def init_weights(m):
 
-    if isinstance(m, nn.Linear):
-        a = np.sqrt(6)/np.sqrt(m.in_features + m.out_features)
-        m.weight.data.uniform_(-a, a)
-        m.bias.data.fill_(0)
+        if isinstance(m, nn.Linear):
+            a = np.sqrt(6)/np.sqrt(m.in_features + m.out_features)
+            m.weight.data.uniform_(-a, a)
+            m.bias.data.fill_(0)
 
 
 if __name__ == "__main__":
@@ -114,13 +132,9 @@ if __name__ == "__main__":
 
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-        criterion = CRITERION[opt.loss]().to(device)
-        metric = METRICS[opt.metric]()
-        layers = opt.layers
-        embeding = opt.embeding
-        act_fun = ACTIVATION[opt.act_fun]
-        #func = ODEF(layers, embeding, act_fun).to(device).apply(init_weights)
-        func = LinearODEF().to(device).apply(init_weights)
+        criterion = CRITERION[opt.loss].to(device)
+        metric = METRICS[opt.metric]
+        func = MODEL[opt.model](opt.layers, opt.embeding, ACTIVATION[opt.act_fun]).to(device).apply(init_weights)
         optimizer = OPTIM[opt.optim](func.parameters(), lr=opt.lr)
         dataloader = DataLoader(DataNPZ('train'), batch_size=opt.batch_size, shuffle=True)
         val = DataLoader(DataNPZ('val'), batch_size=opt.batch_size, shuffle=True)

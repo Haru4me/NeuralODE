@@ -47,6 +47,28 @@ class SMAPE(nn.Module):
         return torch.mean(torch.abs(2*(input-target))/(input+target+eps))
 
 
+class RMSLE(nn.Module):
+
+    def __init__(self):
+
+        super().__init__()
+
+    def forward(self, input: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+        eps = 20
+        return torch.sqrt(torch.mean((torch.log(target + eps) - torch.log(input + eps))**2))
+
+
+class MAGE(nn.Module):
+
+    def __init__(self, dz: float=0.5):
+
+        super().__init__()
+        self.dz = dz
+
+    def forward(self, input: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+        return torch.mean(torch.abs(target-input) > self.dz)
+
+
 class MyMetric(nn.Module):
 
     def __init__(self):

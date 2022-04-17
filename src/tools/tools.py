@@ -123,7 +123,7 @@ def experiment(odeint,
         pbar = tqdm(range(num_epoch))
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    lambda_lr = lambda epoch: 0.1 ** (epoch / 150)
+    lambda_lr = lambda epoch: 0.01 ** (epoch / 250)
     scheduler = LambdaLR(optimizer, lr_lambda=lambda_lr)
     stats = pd.DataFrame([], columns=['train_loss', 'val_loss', 'train_metric', 'val_metric', 'val_loss_1', 'val_loss_2', 'train_loss_1', 'train_loss_2'])
 

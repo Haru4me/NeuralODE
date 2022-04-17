@@ -2,61 +2,221 @@
     "exp1": {
         "lr": 0.01,
         "batch_size": 500,
-        "e": 150,
+        "e": 250,
         "m": "rk4",
         "lf": "MAE",
         "l": "126 256",
-        "emb": "6 6",
-        "af": "Tanh"
+        "emb": "6 8",
+        "af": "Tanh",
+        "mod": "Linear"
     },
     "exp2": {
         "lr": 0.01,
         "batch_size": 500,
-        "e": 150,
+        "e": 250,
         "m": "rk4",
         "lf": "MSE",
         "l": "126 256",
-        "emb": "6 6",
-        "af": "Tanh"
+        "emb": "6 8",
+        "af": "Tanh",
+        "mod": "Linear"
     },
     "exp3": {
         "lr": 0.01,
         "batch_size": 500,
-        "e": 150,
+        "e": 250,
         "m": "rk4",
         "lf": "SmoothMAE",
         "l": "126 256",
-        "emb": "6 6",
-        "af": "Tanh"
+        "emb": "6 8",
+        "af": "Tanh",
+        "mod": "Linear"
     },
     "exp4": {
         "lr": 0.01,
         "batch_size": 500,
-        "e": 150,
+        "e": 250,
         "m": "rk4",
         "lf": "WAPE",
         "l": "126 256",
-        "emb": "6 6",
-        "af": "Tanh"
+        "emb": "6 8",
+        "af": "Tanh",
+        "mod": "Linear"
     },
     "exp5": {
         "lr": 0.01,
         "batch_size": 500,
-        "e": 150,
+        "e": 250,
         "m": "rk4",
         "lf": "SMAPE",
         "l": "126 256",
-        "emb": "6 6",
-        "af": "Tanh"
+        "emb": "6 8",
+        "af": "Tanh",
+        "mod": "Linear"
     },
     "exp6": {
         "lr": 0.01,
         "batch_size": 500,
-        "e": 150,
+        "e": 250,
         "m": "rk4",
-        "lf": "MyMetric",
+        "lf": "MAE",
         "l": "126 256",
-        "emb": "6 6",
-        "af": "Tanh"
+        "emb": "6 8",
+        "af": "Tanh",
+        "mod": "EmbededLinear"
+    },
+    "exp7": {
+        "lr": 0.01,
+        "batch_size": 500,
+        "e": 250,
+        "m": "rk4",
+        "lf": "MSE",
+        "l": "126 256",
+        "emb": "6 8",
+        "af": "Tanh",
+        "mod": "EmbededLinear"
+    },
+    "exp8": {
+        "lr": 0.01,
+        "batch_size": 500,
+        "e": 250,
+        "m": "rk4",
+        "lf": "SmoothMAE",
+        "l": "126 256",
+        "emb": "6 8",
+        "af": "Tanh",
+        "mod": "EmbededLinear"
+    },
+    "exp9": {
+        "lr": 0.01,
+        "batch_size": 500,
+        "e": 250,
+        "m": "rk4",
+        "lf": "WAPE",
+        "l": "126 256",
+        "emb": "6 8",
+        "af": "Tanh",
+        "mod": "EmbededLinear"
+    },
+    "exp10": {
+        "lr": 0.01,
+        "batch_size": 500,
+        "e": 250,
+        "m": "rk4",
+        "lf": "SMAPE",
+        "l": "126 256",
+        "emb": "6 8",
+        "af": "Tanh",
+        "mod": "EmbededLinear"
+    },
+    "exp11": {
+        "lr": 0.01,
+        "batch_size": 500,
+        "e": 250,
+        "m": "rk4",
+        "lf": "MAE",
+        "l": "126 256",
+        "emb": "6 8",
+        "af": "Tanh",
+        "mod": "MultyLayer"
+    },
+    "exp12": {
+        "lr": 0.01,
+        "batch_size": 500,
+        "e": 250,
+        "m": "rk4",
+        "lf": "MSE",
+        "l": "126 256",
+        "emb": "6 8",
+        "af": "Tanh",
+        "mod": "MultyLayer"
+    },
+    "exp13": {
+        "lr": 0.01,
+        "batch_size": 500,
+        "e": 250,
+        "m": "rk4",
+        "lf": "SmoothMAE",
+        "l": "126 256",
+        "emb": "6 8",
+        "af": "Tanh",
+        "mod": "MultyLayer"
+    },
+    "exp14": {
+        "lr": 0.01,
+        "batch_size": 500,
+        "e": 250,
+        "m": "rk4",
+        "lf": "WAPE",
+        "l": "126 256",
+        "emb": "6 8",
+        "af": "Tanh",
+        "mod": "MultyLayer"
+    },
+    "exp15": {
+        "lr": 0.01,
+        "batch_size": 500,
+        "e": 250,
+        "m": "rk4",
+        "lf": "SMAPE",
+        "l": "126 256",
+        "emb": "6 8",
+        "af": "Tanh",
+        "mod": "MultyLayer"
+    },
+    "exp16": {
+        "lr": 0.01,
+        "batch_size": 500,
+        "e": 250,
+        "m": "rk4",
+        "lf": "MAE",
+        "l": "126 256",
+        "emb": "6 8",
+        "af": "RELU",
+        "mod": "EmbededLinear"
+    },
+    "exp17": {
+        "lr": 0.01,
+        "batch_size": 500,
+        "e": 250,
+        "m": "rk4",
+        "lf": "MSE",
+        "l": "126 256",
+        "emb": "6 8",
+        "af": "RELU",
+        "mod": "MultyLayer"
+    },
+    "exp18": {
+        "lr": 0.01,
+        "batch_size": 500,
+        "e": 250,
+        "m": "rk4",
+        "lf": "SmoothMAE",
+        "l": "126 256",
+        "emb": "6 8",
+        "af": "RELU",
+        "mod": "MultyLayer"
+    },
+    "exp19": {
+        "lr": 0.01,
+        "batch_size": 500,
+        "e": 250,
+        "m": "rk4",
+        "lf": "WAPE",
+        "l": "126 256",
+        "emb": "6 8",
+        "af": "RELU",
+        "mod": "MultyLayer"
+    },
+    "exp20": {
+        "lr": 0.01,
+        "batch_size": 500,
+        "e": 250,
+        "m": "rk4",
+        "lf": "SMAPE",
+        "l": "126 256",
+        "emb": "6 8",
+        "af": "RELU",
+        "mod": "MultyLayer"
     }
 }
