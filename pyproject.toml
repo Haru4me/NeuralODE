@@ -26,6 +26,7 @@ importlib-resources = "^5.4.0"
 "backports.weakref" = "^1.0.post1"
 "backports.zoneinfo" = "^0.2.1"
 watchdog = "^2.1.6"
+"tensorboard" = "^2.8.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

@@ -4,7 +4,7 @@
 
 .ipynb_checkpoints
 */.ipynb_checkpoints/*
-*.ipynb
+
 
 # IPython
 profile_default/
@@ -99,6 +99,7 @@ data/agro
 data/climate
 data/pairs
 data/syn
+tensorboard
 
 
 # Poetry stuff:

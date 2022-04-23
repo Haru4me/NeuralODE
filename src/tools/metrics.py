@@ -78,3 +78,15 @@ class MyMetric(nn.Module):
     def forward(self, inputs: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
         eps=1e-8
         return F.mse_loss(inputs[-1], target)/(F.mse_loss(inputs[0], target) + eps)
+
+class WAE(nn.Module):
+
+    def __init__(self):
+
+        super().__init__()
+
+    def forward(self, inputs: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+        eps = 1e-8
+        weight = 1/(torch.abs(inputs - target[:, 0])+eps)
+        ae = torch.abs(inputs - target[:, 1])
+        return torch.mean(ae) + 0.01*torch.sum(weight)

@@ -8,6 +8,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 from torch.optim.lr_scheduler import LambdaLR
+from torch.utils.tensorboard import SummaryWriter
 import torch
 
 plt.style.use('seaborn')
@@ -79,7 +80,7 @@ def draw_sample(stat, name, epoch, streamlit, smpl, gt):
     ax5.set_title('Metric')
     ax5.legend()
 
-    plt.savefig(f'assets/{name}/imgs/{epoch}.png')
+    plt.savefig(f'assets/{name}/imgs/plots.png')
 
     if streamlit:
         return fig
@@ -122,8 +123,9 @@ def experiment(odeint,
         name = settings.name
         pbar = tqdm(range(num_epoch))
 
+    writer = SummaryWriter(f"tensorboard")
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    lambda_lr = lambda epoch: 0.01 ** (epoch / 250)
+    lambda_lr = lambda epoch: 0.01 ** (epoch / 150)
     scheduler = LambdaLR(optimizer, lr_lambda=lambda_lr)
     stats = pd.DataFrame([], columns=['train_loss', 'val_loss', 'train_metric', 'val_metric', 'val_loss_1', 'val_loss_2', 'train_loss_1', 'train_loss_2'])
 
@@ -158,6 +160,7 @@ def experiment(odeint,
                 run_loss_1.append(criterion(preds[:, 0], z1[:, 0]).item())
                 run_loss_2.append(criterion(preds[:, 1], z1[:, 1]).item())
                 run_metric.append(metric([first, preds], z1).item())
+
 
             """
                 Validation
@@ -213,6 +216,19 @@ def experiment(odeint,
                 stats.loc[epoch, 'train_loss_1'] = np.mean(run_loss_1)
                 stats.loc[epoch, 'train_loss_2'] = np.mean(run_loss_2)
 
+                writer.add_scalar('train loss', np.mean(run_loss), epoch)
+                writer.add_scalar('validation loss', np.mean(val_loss), epoch)
+                writer.add_scalar('train loss val_1', np.mean(run_loss_1), epoch)
+                writer.add_scalar('validation loss val_1', np.mean(val_loss_1), epoch)
+                writer.add_scalar('train  loss val_2', np.mean(run_loss_2), epoch)
+                writer.add_scalar('validation  loss val_2', np.mean(val_loss_2), epoch)
+                writer.add_scalar('train metric', np.mean(run_metric), epoch)
+                writer.add_scalar('validation metric', np.mean(val_metric), epoch)
+
+                writer.add_histogram
+
+                #writer.add_graph(func)
+
             if streamlit:
 
                 if epoch == 0:
@@ -255,6 +271,24 @@ def experiment(odeint,
             }
             torch.save(state_dict, f'assets/{name}/model.pt')
 
+    md = {'train loss': np.mean(run_loss),
+          'validation loss': np.mean(val_loss),
+          'train loss val_1': np.mean(run_loss_1),
+          'validation loss val_1': np.mean(val_loss_1),
+          'train  loss val_2': np.mean(run_loss_2),
+          'validation  loss val_2': np.mean(val_loss_2),
+          'train metric': np.mean(run_metric),
+          'validation metric': np.mean(val_metric)}
+
+    params = settings.__dict__.copy()
+    params['num_layers'] = len(settings.layers)
+    params['size_layers'] = ', '.join([str(size) for size in settings.layers])
+    params['size_soil_emb'] = settings.embeding[0]
+    params['size_cover_emb'] = settings.embeding[0]
+    params.pop('layers')
+    params.pop('embeding')
+    writer.add_hparams(params, md, run_name='hparams')
+    writer.close()
 
     if streamlit:
         st.success('Experiment finished!')

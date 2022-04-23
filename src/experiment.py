@@ -38,6 +38,7 @@ CRITERION = {
     'RMSLE': RMSLE(),
     'MAGE': MAGE(),
     'MyMetric': MyMetric(),
+    'WAE': WAE(),
 }
 
 OPTIM = {
@@ -89,7 +90,6 @@ parser.add_argument('-af' ,'--act_fun', type=str, choices=ACTIVATION.keys(), def
 parser.add_argument('-mod' ,'--model', type=str, choices=MODEL.keys(), default='Linear', help='Вид модели аппроксимирующей производную')
 opt = parser.parse_args()
 
-Path(f'logs/').mkdir(exist_ok=True)
 
 LOGGING_CONFIG['handlers']['file_handler']['filename'] = f'logs/{opt.name}.log'
 
@@ -127,6 +127,7 @@ if __name__ == "__main__":
         np.random.seed(42)
 
         Path(f'logs/').mkdir(exist_ok=True)
+        Path(f'tensorboard/').mkdir(exist_ok=True)
         Path(f"assets/{opt.name}").mkdir(exist_ok=True)
         Path(f"assets/{opt.name}/imgs").mkdir(exist_ok=True)
 
@@ -137,7 +138,7 @@ if __name__ == "__main__":
         func = MODEL[opt.model](opt.layers, opt.embeding, ACTIVATION[opt.act_fun]).to(device).apply(init_weights)
         optimizer = OPTIM[opt.optim](func.parameters(), lr=opt.lr, amsgrad=True)
         dataloader = DataLoader(DataNPZ('train'), batch_size=opt.batch_size, shuffle=True)
-        val = DataLoader(DataNPZ('val'), batch_size=opt.batch_size, shuffle=True)
+        val = DataLoader(DataNPZ('val'), batch_size=opt.batch_size)
         sample = DataLoader(DataNPZ('sample'), batch_size=11)
 
         experiment(odeint, func, dataloader, val, sample, optimizer, criterion, metric, opt, LOGGING_CONFIG, streamlit=False)
