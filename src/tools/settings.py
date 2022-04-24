@@ -6,18 +6,18 @@ LOGGING_CONFIG = {
             "format": "%(asctime)s %(name)-12s %(levelname)-8s %(message)s"
             },
         },
-        "handlers": {
-            "file_handler": {
-                "level": "INFO",
-                "formatter": "default",
-                "class": "logging.FileHandler",
-                "mode": "a"
-                },
+    "handlers": {
+        "file_handler": {
+            "level": "INFO",
+            "formatter": "default",
+            "class": "logging.FileHandler",
+            "mode": "a"
             },
-        "loggers": {
-            "": {
-                "handlers": ["file_handler"], "level": "INFO", "propagate": False}
-            }
+        },
+    "loggers": {
+        "": {
+            "handlers": ["file_handler"], "level": "INFO", "propagate": False}
+        }
     }
 
 
