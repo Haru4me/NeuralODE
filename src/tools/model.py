@@ -2,9 +2,6 @@
 ODEF samples file
 """
 
-import enum
-from re import M
-from turtle import clear, forward
 import torch
 import torch.nn as nn
 import numpy as np

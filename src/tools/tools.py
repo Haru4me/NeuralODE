@@ -1,5 +1,3 @@
-from cProfile import label
-from click import option
 import streamlit as st
 from tqdm import tqdm
 import logging.config
@@ -47,23 +45,6 @@ def draw_sample(stat, name, epoch, streamlit, smpl, gt):
     ax3.plot(t, x2, c='g', label='val_2 pred')
     ax3.scatter(t, gt[:, 0], color='b', label='val_1 ground truth')
     ax3.scatter(t, gt[:, 1], color='g', label='val_2 ground truth')
-    """
-    for i in range(11):
-        x1 = smpl[:, i, 0].detach().numpy()
-        x2 = smpl[:, i, 1].detach().numpy()
-        t = np.linspace(i, i+1, x1.shape[0])
-        #bar = ax3.bar(t[1:], r[i].detach().numpy(), width=np.diff(t).mean(), color='b', alpha=0.3)
-        line1, = ax3.plot(t, x1, c='b')
-        line2, = ax3.plot(t, x2, c='g')
-        point1 = ax3.scatter(t[[0, -1]], [start[i, 0].item(), gt[i, 0].item()], color='b')
-        point2 = ax3.scatter(t[[0, -1]], [start[i, 1].item(), gt[i, 1].item()], color='g')
-
-    line1.set_label('predict val_1')
-    line2.set_label('predict val_2')
-    point1.set_label('truth val_1')
-    point2.set_label('truth val_2')
-    #bar.set_label('rainfall')
-    """
 
     ax3.legend(ncol=2)
     ax3.set_ylim(ymax=42)

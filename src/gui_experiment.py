@@ -4,7 +4,6 @@
 """
 
 import logging.config
-from random import shuffle
 from traceback import format_exc
 import streamlit as st
 import torch
