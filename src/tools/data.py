@@ -53,29 +53,14 @@ class DataNPZ(Dataset):
 
     def __init__(self, type: str = 'train'):
 
-        paths = list(Path('./data/dataset').glob('*.npz'))
-        paths = np.random.permutation(paths).tolist()
-        sample_paths = sorted(list(Path('./data/dataset').glob('*57603_2015*.npz')))
-
-        for pth in sample_paths:
-            paths.pop(paths.index(pth))
-
-        train_paths, val_paths = train_test_split(paths, test_size=0.1)
-
-        if type == 'val':
-            self.paths = val_paths
-        elif type == 'train':
-            self.paths = train_paths
-        elif type == 'sample':
-            self.paths = sample_paths
+        self.paths = list(Path(f'./data/dataset/{type}').glob('*.npz'))
 
     def __len__(self):
         return len(self.paths)
-
 
     def __getitem__(self, index):
 
         path = self.paths[index % self.__len__()]
         data = np.load(path)
 
-        return torch.Tensor(data['feature']), torch.Tensor(data['target'])
+        return torch.Tensor(data['v']), torch.Tensor(data['z0']), torch.Tensor(data['z1'])

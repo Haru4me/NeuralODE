@@ -27,5 +27,19 @@ CLIMATE_OPT = {
     'data/climate/precip.mon.ltm.0.5x0.5.nc': 'precip'
 }
 
-SYN_COLS = ['ind', 'datetime', 't2m', 'td2m', 'ff', 'R12', 'phi']
-AGRO_COLS = ['ind', 'dec', 'datetime', 'val_1', 'val_2']
+CAT_OPT = {
+    'soil': {
+        'tiff': 'data/agro/soil/so2015v2.tif',
+        'description': 'data/agro/soil/2015_suborders_and_gridcode.txt'
+    },
+    'cover': {
+        'tiff': 'data/agro/cover/GLOBCOVER_L4_200901_200912_V2.3.tif',
+        'description': 'data/agro/cover/Globcover2009_Legend.xls'
+    }
+}
+
+FEATURES_COLS = ['ind', 'dec', 'dec_next', 'ts', 'phi', 't2m', 'td2m', 'ff', 'R12',
+                 'kult', 'soiltype', 'covertype', 'air', 'soilw', 'precip']
+
+START_VAL_COLS = ['val_1', 'val_2']
+TARGET_COLS = ['val_1_next', 'val_2_next']

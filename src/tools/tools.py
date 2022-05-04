@@ -128,9 +128,9 @@ def experiment(odeint,
             for batch in dataloader:
 
                 optimizer.zero_grad()
-                v, z = batch
-                v, z = v.to(device), z.to(device)
-                z0, z1, t = z[:, 0], z[:, -1], torch.linspace(0, 25, 81, device=device)
+                v, z0, z1  = batch
+                v, z0, z1 = v.to(device), z0.to(device), z1.to(device)
+                t = torch.linspace(0, 50, 81, device=device)
 
                 first, preds = odeint(func, z0, v, t, method=method)[[0,-1]]
                 loss = criterion(preds, z1)
@@ -155,13 +155,12 @@ def experiment(odeint,
                 for batch in val:
 
                     optimizer.zero_grad()
-                    v, z = batch
-                    v, z = v.to(device), z.to(device)
-                    z0, z1, t = z[:, 0], z[:, -1], torch.linspace(0, 25, 81, device=device)
+                    v, z0, z1  = batch
+                    v, z0, z1 = v.to(device), z0.to(device), z1.to(device)
+                    t = torch.linspace(0, 25, 81, device=device)
 
-                    sample_v, sample_z = next(iter(sample))
-                    sample_v, sample_z = sample_v.to(device), sample_z.to(device)
-                    sample_z0, sample_z1 = sample_z[:, 0], sample_z[:, 1]
+                    sample_v, sample_z0, sample_z1 = next(iter(sample))
+                    sample_v, sample_z1, sample_z1 = sample_v.to(device), sample_z0.to(device), sample_z1.to(device)
 
                     first, preds = odeint(func, z0, v, t, method=method)[[0,-1]]
                     sample_pred = odeint(func, sample_z0, sample_v, t, method=method)

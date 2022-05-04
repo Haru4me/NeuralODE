@@ -20,6 +20,8 @@ from tools.settings import LOGGING_CONFIG
 from tools.tools import experiment
 from tools.metrics import *
 
+import os
+import random
 import numpy as np
 from pathlib import Path
 import matplotlib.pyplot as plt
@@ -123,9 +125,12 @@ if __name__ == "__main__":
 
         logger.info(f'Start {opt.name}')
 
+        random.seed(42)
+        os.environ["PL_GLOBAL_SEED"] = str(42)
+        np.random.seed(42)
         torch.manual_seed(42)
         torch.cuda.manual_seed(42)
-        np.random.seed(42)
+        torch.cuda.manual_seed_all(42)
 
         Path(f'tensorboard/').mkdir(exist_ok=True)
         Path(f"assets/{opt.name}").mkdir(exist_ok=True)
@@ -135,11 +140,11 @@ if __name__ == "__main__":
 
         criterion = CRITERION[opt.loss].to(device)
         metric = METRICS[opt.metric]
-        func = MODEL[opt.model](opt.layers, opt.embeding, ACTIVATION[opt.act_fun]).to(device).apply(init_weights)
+        func = MODEL[opt.model](opt.layers, opt.embeding, ACTIVATION[opt.act_fun]).to(device)
         optimizer = OPTIM[opt.optim](func.parameters(), lr=opt.lr, amsgrad=True)
         dataloader = DataLoader(DataNPZ('train'), batch_size=opt.batch_size, shuffle=True)
-        val = DataLoader(DataNPZ('val'), batch_size=opt.batch_size)
-        sample = DataLoader(DataNPZ('sample'), batch_size=11)
+        val = DataLoader(DataNPZ('val'), batch_size=opt.batch_size, shuffle=False)
+        sample = DataLoader(DataNPZ('sample'), batch_size=16, shuffle=False)
 
         experiment(odeint, func, dataloader, val, sample, optimizer, criterion, metric, opt, LOGGING_CONFIG, streamlit=False)
 
