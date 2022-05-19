@@ -38,8 +38,8 @@ CAT_OPT = {
     }
 }
 
-FEATURES_COLS = ['ind', 'dec', 'dec_next', 'ts', 'phi', 't2m', 'td2m', 'ff', 'R12',
-                 'kult', 'soiltype', 'covertype', 'air', 'soilw', 'precip']
+FEATURES_COLS = ['t2m', 'td2m', 'ff', 'R12', 'phi', 'air',
+                    'soilw', 'precip', 'culttype', 'soiltype', 'covertype']
 
 START_VAL_COLS = ['val_1', 'val_2']
 TARGET_COLS = ['val_1_next', 'val_2_next']

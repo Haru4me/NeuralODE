@@ -4,6 +4,7 @@ ODEF samples file
 
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 import numpy as np
 
 
@@ -20,16 +21,27 @@ class LinearODEF(nn.Module):
                 m.weight.data.uniform_(-a, a)
                 m.bias.data.fill_(0)
 
-        self.norm = nn.BatchNorm1d(12, affine=False)
-        self.reg = nn.Linear(12, 2).apply(init_weights)
+        self.norm = nn.BatchNorm1d(13, affine=False)
+        self.reg = nn.Linear(13, 2).apply(init_weights)
 
     def forward(self, t, x):
         return self.reg(self.norm(x))
 
 
+class Embedding(nn.Module):
+
+    def __init__(self, num, weight):
+
+        super().__init__()
+        self.weight = torch.tensor(weight)
+        self.num = num
+
+    def forward(self, x):
+        return torch.matmul(F.one_hot(x.long(), num_classes=self.num).float(), self.weight)
+
 class EmbededLinearODEF(nn.Module):
 
-    def __init__(self, layers, embs, func):
+    def __init__(self, layers, embs, func, mean, std):
 
         super().__init__()
 
@@ -40,42 +52,28 @@ class EmbededLinearODEF(nn.Module):
                 m.weight.data.uniform_(-a, a)
                 m.bias.data.fill_(0)
 
-        self.soil_emb = nn.Embedding(12, embs[0])
-        self.cover_emb = nn.Embedding(16, embs[1])
-        self.norm = nn.BatchNorm1d(10+sum(embs), affine=False)
-        self.reg = nn.Linear(10+sum(embs), 2).apply(init_weights)
+        self.cult_emb = nn.Embedding(7, embs[0])
+        self.soil_emb = nn.Embedding(7, embs[1])
+        self.cover_emb = nn.Embedding(8, embs[2])
+        self.mean = mean
+        self.std = std
+        self.reg = nn.Linear(10+10, 2).apply(init_weights)
 
     def forward(self, t, x):
 
-        e1 = x[:, -2].long()
-        e2 = x[:, -1].long()
-        x = x[:, :-2]
+        e1 = x[:, -3].long()
+        e2 = x[:, -2].long()
+        e3 = x[:, -1].long()
+        x = x[:, :-3]
 
-        e1 = self.soil_emb(e1)
-        e2 = self.cover_emb(e2)
+        e1 = self.cult_emb(e1)
+        e2 = self.soil_emb(e2)
+        e3 = self.cover_emb(e3)
 
-        x = torch.cat((x, e1, e2), dim=-1)
-        x = self.norm(x)
+        x = (x-self.mean)/self.std
+        x = torch.cat((x, e1, e2, e3), dim=-1)
 
         return self.reg(x)
-
-
-class Embeddings(nn.Module):
-
-    def __init__(self, embs):
-
-        super().__init__()
-
-        self.soil_emb = nn.Embedding(12, embs[0])
-        self.cover_emb = nn.Embedding(16, embs[1])
-
-    def forward(self, e1, e2):
-
-        e1 = self.soil_emb(e1)
-        e2 = self.cover_emb(e2)
-        e = torch.cat((e1, e2), dim=-1)
-
-        return e
 
 class Layer(nn.Module):
 
@@ -96,12 +94,12 @@ class Layer(nn.Module):
 
 class MultyLayerODEF(nn.Module):
 
-    def __init__(self, layers, embs, func):
+    def __init__(self, layers, embs, func, mean, std):
 
         super().__init__()
 
-        net = [nn.BatchNorm1d(10+sum(embs), affine=False),
-               Layer(10+sum(embs), layers[0], func)]
+        net = [nn.BatchNorm1d(10+10, affine=False),
+               Layer(10+10, layers[0], func)]
 
         if len(layers) > 1:
             for i in range(1, len(layers)):
@@ -112,16 +110,25 @@ class MultyLayerODEF(nn.Module):
         net.append(Layer(layers[i], 2, func, output=True))
 
         self.net = nn.Sequential(*net)
-        self.embeddings = Embeddings(embs)
+        self.cult_emb = nn.Embedding(7, embs[0])
+        self.soil_emb = nn.Embedding(7, embs[1])
+        self.cover_emb = nn.Embedding(8, embs[2])
+        self.mean = mean
+        self.std = std
 
     def forward(self, t, x):
 
-        e1 = x[:, -2].long()
-        e2 = x[:, -1].long()
-        x = x[:, :-2]
+        e1 = x[:, -3].long()
+        e2 = x[:, -2].long()
+        e3 = x[:, -1].long()
+        x = x[:, :-3]
 
-        e = self.embeddings(e1,e2)
-        x = torch.cat((x, e), dim=-1)
+        e1 = self.cult_emb(e1)
+        e2 = self.soil_emb(e2)
+        e3 = self.cover_emb(e3)
+
+        x = (x-self.mean)/self.std
+        x = torch.cat((x, e1, e2, e3), dim=-1)
         x = self.net(x)
 
         return x

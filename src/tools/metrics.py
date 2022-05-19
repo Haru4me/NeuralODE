@@ -47,15 +47,14 @@ class SMAPE(nn.Module):
         return torch.mean(torch.abs(2*(input-target))/(input+target+eps))
 
 
-class RMSLE(nn.Module):
+class RMSE(nn.Module):
 
     def __init__(self):
 
         super().__init__()
 
     def forward(self, input: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
-        eps = 20
-        return torch.sqrt(torch.mean((torch.log(target + eps) - torch.log(input + eps))**2))
+        return torch.sqrt(F.mse_loss(input, target))
 
 
 class MAGE(nn.Module):

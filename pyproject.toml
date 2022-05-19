@@ -30,6 +30,7 @@ watchdog = "^2.1.6"
 "geotiff" = ""
 imagecodecs = "^2022.2.22"
 xlrd = "^2.0.1"
+seaborn = "^0.11.2"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

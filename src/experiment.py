@@ -37,7 +37,7 @@ CRITERION = {
     'MAPE': MeanAbsolutePercentageError(),
     'WAPE': WeightedMeanAbsolutePercentageError(),
     'SMAPE': SymmetricMeanAbsolutePercentageError(),
-    'RMSLE': RMSLE(),
+    'RMSLE': RMSE(),
     'MAGE': MAGE(),
     'MyMetric': MyMetric(),
     'WAE': WAE(),
@@ -138,9 +138,13 @@ if __name__ == "__main__":
 
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+        norm = np.load('data/norm.npz')
+        embs = np.load('data/embeddings.npz')
+        embeding = [embs['cult_emb'], embs['soil_emb'], embs['cover_emb']]
+
         criterion = CRITERION[opt.loss].to(device)
         metric = METRICS[opt.metric]
-        func = MODEL[opt.model](opt.layers, opt.embeding, ACTIVATION[opt.act_fun]).to(device)
+        func = MODEL[opt.model](opt.layers, opt.embeding, ACTIVATION[opt.act_fun], torch.tensor(norm['mean']), torch.tensor(norm['std'])).to(device)
         optimizer = OPTIM[opt.optim](func.parameters(), lr=opt.lr, amsgrad=True)
         dataloader = DataLoader(DataNPZ('train'), batch_size=opt.batch_size, shuffle=True)
         val = DataLoader(DataNPZ('val'), batch_size=opt.batch_size, shuffle=False)
