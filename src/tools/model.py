@@ -98,8 +98,7 @@ class MultyLayerODEF(nn.Module):
 
         super().__init__()
 
-        net = [nn.BatchNorm1d(10+10, affine=False),
-               Layer(10+10, layers[0], func)]
+        net = [Layer(10+10, layers[0], func)]
 
         if len(layers) > 1:
             for i in range(1, len(layers)):

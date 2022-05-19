@@ -37,7 +37,7 @@ CRITERION = {
     'MAPE': MeanAbsolutePercentageError(),
     'WAPE': WeightedMeanAbsolutePercentageError(),
     'SMAPE': SymmetricMeanAbsolutePercentageError(),
-    'RMSLE': RMSE(),
+    'RMSE': RMSE(),
     'MAGE': MAGE(),
     'MyMetric': MyMetric(),
     'WAE': WAE(),
