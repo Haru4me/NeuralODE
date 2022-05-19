@@ -45,19 +45,12 @@ class EmbededLinearODEF(nn.Module):
 
         super().__init__()
 
-        def init_weights(m):
-
-            if isinstance(m, nn.Linear):
-                a = 1/np.sqrt(m.in_features)
-                m.weight.data.uniform_(-a, a)
-                m.bias.data.fill_(0)
-
         self.cult_emb = nn.Embedding(7, embs[0])
         self.soil_emb = nn.Embedding(7, embs[1])
         self.cover_emb = nn.Embedding(8, embs[2])
         self.mean = mean
         self.std = std
-        self.reg = nn.Linear(10+10, 2).apply(init_weights)
+        self.reg = nn.Linear(10+10, 2)
 
     def forward(self, t, x):
 

@@ -74,9 +74,9 @@ class MyMetric(nn.Module):
 
         super().__init__()
 
-    def forward(self, inputs: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+    def forward(self, inputs: torch.Tensor, target: torch.Tensor, start: torch.Tensor) -> torch.Tensor:
         eps=1e-8
-        return F.mse_loss(inputs[-1], target)/(F.mse_loss(inputs[0], target) + eps)
+        return F.mse_loss(inputs, target)/(F.mse_loss(start, target) + eps)
 
 class WAE(nn.Module):
 

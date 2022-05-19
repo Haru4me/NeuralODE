@@ -132,7 +132,7 @@ def experiment(odeint,
                 v, z0, z1 = v.to(device), z0.to(device), z1.to(device)
                 t = torch.linspace(0, 50, 81, device=device)
 
-                first, preds = odeint(func, z0, v, t, method=method)[[0,-1]]
+                preds = odeint(func, z0, v, t, method=method)[-1]
                 loss = criterion(preds, z1)
                 loss.backward()
                 optimizer.step()
@@ -140,7 +140,7 @@ def experiment(odeint,
                 run_loss.append(loss.item())
                 run_loss_1.append(criterion(preds[:, 0], z1[:, 0]).item())
                 run_loss_2.append(criterion(preds[:, 1], z1[:, 1]).item())
-                run_metric.append(metric([first, preds], z1).item())
+                run_metric.append(metric(preds, z1, z0).item())
 
 
             """
@@ -162,7 +162,7 @@ def experiment(odeint,
                     sample_v, sample_z0, sample_z1 = next(iter(sample))
                     sample_v, sample_z1, sample_z1 = sample_v.to(device), sample_z0.to(device), sample_z1.to(device)
 
-                    first, preds = odeint(func, z0, v, t, method=method)[[0,-1]]
+                    preds = odeint(func, z0, v, t, method=method)[-1]
                     sample_pred = odeint(func, sample_z0, sample_v, t, method=method)
 
                     loss = criterion(preds, z1)
@@ -170,7 +170,7 @@ def experiment(odeint,
                     val_loss.append(loss.item())
                     val_loss_1.append(criterion(preds[:, 0], z1[:, 0]).item())
                     val_loss_2.append(criterion(preds[:, 1], z1[:, 1]).item())
-                    val_metric.append(metric([first, preds], z1).item())
+                    val_metric.append(metric(preds, z1, z0).item())
 
                 scheduler.step()
 
