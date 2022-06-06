@@ -27,5 +27,5 @@ class RK4(FixedGridODESolver):
     order = 4
 
     def _step_func(self, func, t0, dt, t1, y0, v0):
-        f0 = func(t0, torch.cat((y0, v0), dim=-1), perturb=Perturb.NEXT if self.perturb else Perturb.NONE)
+        f0 = func(t0, torch.cat((y0, v0[0]), dim=-1), perturb=Perturb.NEXT if self.perturb else Perturb.NONE)
         return rk4_alt_step_func(func, t0, dt, t1, y0, v0, f0=f0, perturb=self.perturb), f0

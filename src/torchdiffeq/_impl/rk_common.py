@@ -106,11 +106,15 @@ def rk4_step_func(func, t0, dt, t1, y0, f0=None, perturb=False):
 def rk4_alt_step_func(func, t0, dt, t1, y0, v0, f0=None, perturb=False):
     """Smaller error with slightly more compute."""
     k1 = f0
+    v13 = v0[0].clone()
+    v23 = v0[0].clone()
+    v13[:,:-3] = (v0[0][:,:-3]+v0[1][:,:-3])*_one_third
+    v23[:,:-3] = (v0[0][:,:-3]+v0[1][:,:-3])*_one_third
     if k1 is None:
-        k1 = func(t0, torch.cat((y0, v0), dim=-1), perturb = Perturb.NEXT if perturb else Perturb.NONE)
-    k2=func(t0 + dt * _one_third, torch.cat((y0 + dt * k1 * _one_third, v0), dim=-1))
-    k3=func(t0 + dt * _two_thirds, torch.cat((y0 + dt * (k2 - k1 * _one_third), v0), dim=-1))
-    k4=func(t1, torch.cat((y0 + dt * (k1 - k2 + k3), v0), dim=-1), perturb=Perturb.PREV if perturb else Perturb.NONE)
+        k1 = func(t0, torch.cat((y0, v0[0]), dim=-1), perturb = Perturb.NEXT if perturb else Perturb.NONE)
+    k2=func(t0 + dt * _one_third, torch.cat((y0 + dt * k1 * _one_third, v13), dim=-1))
+    k3=func(t0 + dt * _two_thirds, torch.cat((y0 + dt * (k2 - k1 * _one_third), v23), dim=-1))
+    k4=func(t1, torch.cat((y0 + dt * (k1 - k2 + k3), v0[1]), dim=-1), perturb=Perturb.PREV if perturb else Perturb.NONE)
     return (k1 + 3 * (k2 + k3) + k4) * dt * 0.125
 
 
