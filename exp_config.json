@@ -140,7 +140,7 @@
         "l": "64",
         "emb": "3 3 4",
         "af": "RELU",
-        "mod": "EmbededLinear"
+        "mod": "MultyLayer"
     },
     "exp14": {
         "lr": 0.005,
