@@ -67,8 +67,8 @@ def agro_to_event_period(df: pd.DataFrame) -> pd.DataFrame:
     df.loc[df.dur == 11, 'datetime_next'] = df[df.dur == 11].datetime_next-pd.Timedelta('1d')
     df.loc[:, 'dur'] = (df.datetime_next - df.datetime).dt.total_seconds().astype(int)
 
-    new_agro = pd.to_datetime((np.repeat(df.datetime.view(int)//int(1e9), 240)\
-         + np.hstack([np.arange(0, v, pd.Timedelta('1h').total_seconds()) for v in df.dur]))*int(1e9))
+    new_agro = pd.to_datetime((np.repeat(df.datetime.view(int)//int(1e9), 243)\
+         + np.hstack([np.arange(0, v, pd.Timedelta('1h').total_seconds()) for v in df.dur+10800.0]))*int(1e9))
     new_agro = df.join(new_agro.rename('ts'), how='outer')
 
     return new_agro
@@ -78,7 +78,7 @@ def data_fusion(agro: pd.DataFrame, syn: pd.DataFrame, pairs: pd.DataFrame, max_
     syn = syn.merge(pairs[pairs.dist < max_dist], on='s_ind')
     data = agro.merge(syn, left_on=['ind', 'ts'], right_on=['ind','datetime'], how='inner')
     agr = data.groupby(['ind', 'year', 'dec']).val_1.count()
-    data = data.set_index(['ind', 'year', 'dec']).loc[agr[agr == 80].index].reset_index()
+    data = data.set_index(['ind', 'year', 'dec']).loc[agr[agr == 81].index].reset_index()
     data.loc[:, ['t2m', 'td2m', 'ff']] = data[['t2m', 'td2m', 'ff']].interpolate(method='polynomial', order=3)
 
     for i,j in data[['s_ind','dec']].drop_duplicates().values:
@@ -256,6 +256,7 @@ if __name__ == '__main__':
     data.loc[:, 'phi'] = np.sin(((data.ts-pd.Timestamp('1970-01-01'))/pd.Timedelta(seconds=1)/pd.Timedelta(days=365.24).total_seconds()*2*np.pi))
     data.loc[:, 'air'] = data.air-272.1
     data = cat_prep(data.copy())
+    data = data.sort_values(['ind','year', 'dec'])
     data.to_parquet('data/data.pq')
 
     alls = set(Path('data/dataset').rglob('*.npz'))
