@@ -109,7 +109,7 @@ def rk4_alt_step_func(func, t0, dt, t1, y0, v0, f0=None, perturb=False):
     v13 = v0[0].clone()
     v23 = v0[0].clone()
     v13[:,:-3] = (v0[0][:,:-3]+v0[1][:,:-3])*_one_third
-    v23[:,:-3] = (v0[0][:,:-3]+v0[1][:,:-3])*_one_third
+    v23[:,:-3] = (v0[0][:,:-3]+v0[1][:,:-3])*_two_thirds
     if k1 is None:
         k1 = func(t0, torch.cat((y0, v0[0]), dim=-1), perturb = Perturb.NEXT if perturb else Perturb.NONE)
     k2=func(t0 + dt * _one_third, torch.cat((y0 + dt * k1 * _one_third, v13), dim=-1))
